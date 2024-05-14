@@ -111,8 +111,26 @@ void exibirQuantidade() {
 
 }
 
-void exibir() {
+void exibirAntesRemocao() {
+	cout << "Arvore antes da exclusao:" << endl;
 	exibirElementosArvore(raiz);
+}
+
+void exibirDepoisRemocao() {
+	cout << "\nArvore apos a exclusao:" << endl;
+	exibirElementosArvore(raiz);
+}
+
+void exibir() {
+	exibirAntesRemocao();
+
+	int valor;
+	cout << "\nDigite o elemento a ser removido: ";
+	cin >> valor;
+
+	removerElementoArvore(raiz, valor);
+
+	exibirDepoisRemocao();
 }
 
 void buscar() {
@@ -246,43 +264,57 @@ void removerElementoArvore(NO* no, int valor) {
 		return;
 	}
 
-
 	// caso 1: sem filhos	
-	
+	if (atual->esq == NULL && atual->dir == NULL) {
+		if (pai == NULL) {
+			raiz = NULL;
+		}
+		else if (pai->esq == atual) {
+			pai->esq = NULL;
+		}
+		else {
+			pai->dir = NULL;
+		}
+		free(atual);
+		cout << "Elemento removido\n";
+		return;
+	}
 
 	// caso 2: um filho	
-	
+	if (atual->esq == NULL || atual->dir == NULL) {
+		NO* filho = (atual->esq != NULL) ? atual->esq : atual->dir;
+		if (pai == NULL) {
+			raiz = filho;
+		}
+		else if (pai->esq == atual) {
+			pai->esq = filho;
+		}
+		else {
+			pai->dir = filho;
+		}
+		free(atual);
+		cout << "Elemento com 1 filho removido: " << valor << endl;
+		return;
+	}
 
 	// caso 3: dois filhos
-
-	// procura o elmento mais a esquerda da sub-arvore da direita
-	NO* sucessor = atual->dir;
-	NO* paiSucessor = atual;
-	while (sucessor->esq != NULL) {
-		paiSucessor = sucessor;
-		sucessor = sucessor->esq;
+	NO* aux = atual->dir;
+	NO* paiAux = atual;
+	while (aux->esq != NULL) {
+		paiAux = aux;
+		aux = aux->esq;
 	}
 
-	// copia o valor do sucessor para o no atual
-	atual->valor = sucessor->valor;
-
-	// se existir uma sub-arvore a direita do sucessor , entao
-	// ela deve ser ligada ao pai do sucessor
-	if (sucessor->dir != NULL)
-	{
-		paiSucessor->esq = sucessor->dir;
+	atual->valor = aux->valor;
+	if (paiAux == atual) {
+		paiAux->dir = aux->dir;
 	}
 	else {
-		paiSucessor->esq = NULL;
+		paiAux->esq = aux->dir;
 	}
 
-	//libera memoria
-	free(sucessor);
-
-
+	free(aux);
+	cout << "Elemento trocado: " << valor << endl;
 }
-
-
-
 
 
